@@ -1,4 +1,4 @@
-(ns sidonnaisuudet.neo4j
+(ns connections.neo4j
   (:require
     [clojurewerkz.neocons.rest :as nr]
     [clojurewerkz.neocons.rest.nodes :as nn]
