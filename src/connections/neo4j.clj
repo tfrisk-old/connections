@@ -27,6 +27,9 @@
 (defn get-node-by-id [id]
   (nn/get conn id))
 
+(defn read-name-by-id [id]
+  (get-in (get-node-by-id id) [:data :name]))
+
 (defn get-node-connections-out [id]
   (nrl/outgoing-for conn (get-node-by-id id)))
 
