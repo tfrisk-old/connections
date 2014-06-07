@@ -13,7 +13,7 @@
 
   :cljsbuild { 
     :builds [{:id "connections"
-              :source-paths ["src"]
+              :source-paths ["src/cljs"]
               :compiler {
                 :output-to "connections.js"
                 :output-dir "out"
