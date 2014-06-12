@@ -4,8 +4,8 @@
 
 (def header
   [:head
-    [:script {:src "out/goog/base.js" :type "text/javascript"}]
-    [:script {:src "connections.js" :type "text/javascript"}]
+    [:script {:src "/js/goog/base.js" :type "text/javascript"}]
+    [:script {:src "/js/connections.js" :type "text/javascript"}]
     [:script {:type "text/javascript"} (str "goog.require(\"connections.core\");")]
   ])
 

@@ -12,6 +12,7 @@
   (GET "/" [] (web/index-page))
   (GET "/details/:id" [id] (web/details-page id))
   (POST "/search" {params :params} (web/search-page params))
+  (route/resources "/")
   (route/not-found "Page not found"))
 
 (def app

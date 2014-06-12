@@ -21,7 +21,7 @@
     :builds [{:id "connections"
               :source-paths ["src/cljs"]
               :compiler {
-                :output-to "connections.js"
+                :output-to "resources/public/js/connections.js"
                 :output-dir "out"
                 :optimizations :none
                 :source-map true}}]})
