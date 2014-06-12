@@ -16,7 +16,7 @@
       content]))
 
 (def search-form
-  (form-to [:post "/search"]
+  (form-to {:id "search-form"} [:post "/search" "search-form"]
     (text-field "search-text")
     (submit-button "Search")))
 
