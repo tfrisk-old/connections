@@ -35,6 +35,14 @@
 (defn get-entry-by-name [name]
   (cypher (str "MATCH (n) WHERE n.name='"name"' RETURN n")))
 
+(defn search-all-persons []
+  (clean-search-results
+    (cypher (str "MATCH (p:Person) RETURN p"))))
+
+(defn search-all-organizations []
+  (clean-search-results
+    (cypher (str "MATCH (o:Organization) RETURN o"))))
+
 (defn get-node-by-id [id]
   (nn/get conn id))
 
