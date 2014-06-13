@@ -1,4 +1,4 @@
-(ns connections.web
+(ns connections.views
   (:use [connections.neo4j :as neo4j])
   (:use [hiccup core form page element]))
 
@@ -29,6 +29,7 @@
 
 (defn search-page [params]
   (layout
+    search-form
     [:h2 "Search for: "(get params :search-text)]
     ;TODO: input sanitation
     (neo4j/search-entries-by-name (get params :search-text))))

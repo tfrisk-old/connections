@@ -1,7 +1,7 @@
 (ns connections.routes
   (:use
     compojure.core
-    [connections.web :as web]
+    [connections.views :as views]
     [hiccup.middleware :only (wrap-base-url)])
   (:require
     [compojure.route :as route]
@@ -9,9 +9,9 @@
     [compojure.response :as response]))
 
 (defroutes app-routes
-  (GET "/" [] (web/index-page))
-  (GET "/details/:id" [id] (web/details-page id))
-  (POST "/search" {params :params} (web/search-page params))
+  (GET "/" [] (views/index-page))
+  (GET "/details/:id" [id] (views/details-page id))
+  (POST "/search" {params :params} (views/search-page params))
   (route/resources "/")
   (route/not-found "Page not found"))
 
