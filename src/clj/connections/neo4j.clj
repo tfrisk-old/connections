@@ -11,12 +11,15 @@
 (defn cypher [query]
   (clojurewerkz.neocons.rest.cypher/tquery conn query))
 
-; Very haxxy way of reading node id, takes cypher return value as an input
-(defn read-id-from-cypher-entry [entry]
+(defn read-id-from-url [url]
   (Integer/parseInt
     (last (clojure.string/split
-      (get (second (first entry)) :self)
-      #"/"))))
+      url #"/"))))
+
+; Very haxxy way of reading node id, takes cypher return value as an input
+(defn read-id-from-cypher-entry [entry]
+  (read-id-from-url
+    (get (second (first entry)) :self)))
 
 (defn read-name-from-cypher-entry [entry]
   (get-in (second (first entry)) [:data :name]))
@@ -60,4 +63,14 @@
 
 (defn get-connections-in-by-name [name]
   (get-node-connections-in (read-id-from-cypher-entry (get-entry-by-name name))))
+
+(defn get-connection-details [connection]
+  (let [sid (read-id-from-url (get connection :start))
+        eid (read-id-from-url (get connection :end))]
+    (hash-map
+      :startid sid
+      :startname (read-name-by-id sid)
+      :endid eid
+      :endname (read-name-by-id eid)
+      :type (get connection :type))))
 
