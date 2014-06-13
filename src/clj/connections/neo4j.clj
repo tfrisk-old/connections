@@ -59,10 +59,10 @@
   (nrl/incoming-for conn (get-node-by-id id)))
 
 (defn get-connections-out-by-name [name]
-  (get-node-connections-out (read-id-from-cypher-entry (get-entry-by-name name))))
+  (get-node-connections-out (read-id-from-cypher-entry (first (get-entry-by-name name)))))
 
 (defn get-connections-in-by-name [name]
-  (get-node-connections-in (read-id-from-cypher-entry (get-entry-by-name name))))
+  (get-node-connections-in (read-id-from-cypher-entry (first (get-entry-by-name name)))))
 
 (defn get-connection-details [connection]
   (let [sid (read-id-from-url (get connection :start))
@@ -73,4 +73,12 @@
       :endid eid
       :endname (read-name-by-id eid)
       :type (get connection :type))))
+
+;get all connections for an entry
+(defn get-connections-by-name [name]
+  (filter #(not (empty? %))
+    (conj
+      '()
+      (map #(get-connection-details %) (get-connections-in-by-name name))
+      (map #(get-connection-details %) (get-connections-out-by-name name)))))
 
