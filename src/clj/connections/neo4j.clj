@@ -68,6 +68,7 @@
   (let [sid (read-id-from-url (get connection :start))
         eid (read-id-from-url (get connection :end))]
     (hash-map
+      :cid (get connection :id)
       :startid sid
       :startname (read-name-by-id sid)
       :endid eid

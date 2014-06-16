@@ -60,10 +60,13 @@
 
 (defn list-connection-entry-editable [entry entryid]
   [:li
-  (form-to [:post (str "/details/" entryid "/edit") "entryedit"]
+  (form-to [:post (str "/details/" entryid "/edit") "connectionedit"]
     (text-field "startname" (get entry :startname))
+    (text-field "startid" (get entry :startid))
     (text-field "type" (get entry :type))
     (text-field "endname" (get entry :endname))
+    (text-field "endid" (get entry :endid))
+    (text-field "cid" (get entry :cid))
     (submit-button "save"))
   ])
 
@@ -84,7 +87,7 @@
 
 (defn details-page [id]
   (layout
-    [:h2 "Details for: "(read-name-by-id (Integer/parseInt id))]
+    [:h2 "Details for: "(read-name-by-id (Integer/parseInt id)) " " (link-to (str "/details/" id "/edit") "edit")]
     (let [name (read-name-by-id (Integer/parseInt id))]
       (list-connections-detailed (first (get-connections-by-name name)) (Integer/parseInt id))
     )))
@@ -95,6 +98,12 @@
     (let [name (read-name-by-id (Integer/parseInt id))]
       (list-connections-editable (first (get-connections-by-name name)) (Integer/parseInt id))
     )))
+
+(defn details-edit-page-post [id params]
+  (layout
+    [:h2 "Edit details for: " (read-name-by-id (Integer/parseInt id))]
+    (str params)
+    ))
 
 (defn search-page [params]
   (layout
