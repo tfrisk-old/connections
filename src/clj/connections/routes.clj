@@ -11,6 +11,8 @@
 (defroutes app-routes
   (GET "/" [] (views/index-page))
   (GET "/details/:id" [id] (views/details-page id))
+  (GET "/details/:id/edit" [id] (views/details-edit-page id))
+  (POST "/details/:id/edit" [id] (views/details-edit-page id))
   (GET "/persons" [] (views/list-all-persons))
   (GET "/organizations" [] (views/list-all-organizations))
   (POST "/search" {params :params} (views/search-page params))
