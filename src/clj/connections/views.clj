@@ -85,23 +85,27 @@
     (map #(list-connection-entry-editable % id) coll)
   ])
 
+(defn details-edit-fields [id]
+  (str (get (neo4j/get-node-by-id (Integer/parseInt id)) :data)))
+
 (defn details-page [id]
   (layout
-    [:h2 "Details for: "(read-name-by-id (Integer/parseInt id)) " " (link-to (str "/details/" id "/edit") "edit")]
-    (let [name (read-name-by-id (Integer/parseInt id))]
-      (list-connections-detailed (first (get-connections-by-name name)) (Integer/parseInt id))
+    [:h2 "Details for: "(neo4j/read-name-by-id (Integer/parseInt id)) " " (link-to (str "/details/" id "/edit") "edit")]
+    [:p "Data: "(details-edit-fields id)]
+    (let [name (neo4j/read-name-by-id (Integer/parseInt id))]
+      (list-connections-detailed (first (neo4j/get-connections-by-name name)) (Integer/parseInt id))
     )))
 
 (defn details-edit-page [id]
   (layout
-    [:h2 "Edit details for: " (read-name-by-id (Integer/parseInt id))]
+    [:h2 "Edit details for: " (neo4j/read-name-by-id (Integer/parseInt id)) " " (link-to (str "/details/" id) "cancel")]
     (let [name (read-name-by-id (Integer/parseInt id))]
-      (list-connections-editable (first (get-connections-by-name name)) (Integer/parseInt id))
+      (list-connections-editable (first (neo4j/get-connections-by-name name)) (Integer/parseInt id))
     )))
 
 (defn details-edit-page-post [id params]
   (layout
-    [:h2 "Edit details for: " (read-name-by-id (Integer/parseInt id))]
+    [:h2 "Edit details for: " (neo4j/read-name-by-id (Integer/parseInt id))]
     (str params)
     ))
 
@@ -115,10 +119,12 @@
 (defn list-all-persons []
   (layout
     [:h2 "All persons"]
-    (list-connections-simple (search-all-persons))))
+    (list-connections-simple
+      (neo4j/search-all-persons))))
 
 (defn list-all-organizations []
   (layout
     [:h2 "All organizations"]
-    (list-connections-simple (search-all-organizations))))
+    (list-connections-simple
+      (neo4j/search-all-organizations))))
 
