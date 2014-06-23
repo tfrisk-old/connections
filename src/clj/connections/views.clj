@@ -43,7 +43,7 @@
   [:li
     (link-to
       (str "/details/" (get entry :id))
-      (str (get entry :name) " " entry))
+      (str (get entry :name)))
   ])
 
 (defn list-connection-entry-detailed [entry entryid]
@@ -54,8 +54,9 @@
             (get entry :endid)
 	    (get entry :startid)))
           (if (= entryid (get entry :startid))
-	    (str (get entry :endname) " " entry)
-	    (str (get entry :startname) " " entry)))
+	    (str (get entry :endname) " ")
+	    (str (get entry :startname) " ")))
+    "(" (get entry :startdate) " - " (get entry :enddate) ")"
   ])
 
 (defn list-connection-entry-editable [entry entryid]
@@ -67,6 +68,8 @@
     (text-field "endname" (get entry :endname))
     (text-field "endid" (get entry :endid))
     (text-field "cid" (get entry :cid))
+    (text-field "startdate" (get entry :startdate))
+    (text-field "enddate" (get entry :enddate))
     (submit-button "save"))
   ])
 

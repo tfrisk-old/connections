@@ -73,7 +73,9 @@
       :startname (read-name-by-id sid)
       :endid eid
       :endname (read-name-by-id eid)
-      :type (get connection :type))))
+      :type (get connection :type)
+      :startdate (get-in connection [:data :startdate])
+      :enddate (get-in connection [:data :enddate]))))
 
 ;get all connections for an entry
 (defn get-connections-by-name [name]
