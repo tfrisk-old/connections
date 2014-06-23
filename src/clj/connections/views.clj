@@ -56,7 +56,7 @@
           (if (= entryid (get entry :startid))
 	    (str (get entry :endname) " ")
 	    (str (get entry :startname) " ")))
-    "(" (get entry :startdate) " - " (get entry :enddate) ")"
+    " (" (get entry :role) " " (get entry :startdate) " - " (get entry :enddate) " )"
   ])
 
 (defn list-connection-entry-editable [entry entryid]
@@ -68,6 +68,7 @@
     (text-field "endname" (get entry :endname))
     (text-field "endid" (get entry :endid))
     (text-field "cid" (get entry :cid))
+    (text-field "role" (get entry :role))
     (text-field "startdate" (get entry :startdate))
     (text-field "enddate" (get entry :enddate))
     (submit-button "save"))

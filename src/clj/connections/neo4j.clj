@@ -74,6 +74,7 @@
       :endid eid
       :endname (read-name-by-id eid)
       :type (get connection :type)
+      :role (get-in connection [:data :role])
       :startdate (get-in connection [:data :startdate])
       :enddate (get-in connection [:data :enddate]))))
 
