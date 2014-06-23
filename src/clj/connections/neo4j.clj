@@ -3,7 +3,8 @@
     [clojurewerkz.neocons.rest :as nr]
     [clojurewerkz.neocons.rest.nodes :as nn]
     [clojurewerkz.neocons.rest.relationships :as nrl]
-    [clojurewerkz.neocons.rest.cypher :as cy]))
+    [clojurewerkz.neocons.rest.cypher :as cy]
+    [clojurewerkz.neocons.rest.paths :as paths]))
 
 ; Connection details
 (def conn (nr/connect "http://localhost:7475/db/data/"))
@@ -85,4 +86,15 @@
       '()
       (map #(get-connection-details %) (get-connections-in-by-name name))
       (map #(get-connection-details %) (get-connections-out-by-name name)))))
+
+(defn get-path-details [path]
+  (into #{} (map #(hash-map
+    :id (read-id-from-url %)
+    :name (read-name-by-id (read-id-from-url %)))
+    (get path :nodes))))
+
+(defn get-paths-between-nodes [id1 id2 depth]
+  (map
+    #(get-path-details %)
+    (paths/all-shortest-between conn id1 id2 :max-depth depth)))
 
