@@ -2,6 +2,9 @@
   (:use [connections.neo4j :as neo4j])
   (:use [hiccup core form page element]))
 
+(defn parse-int [s]
+  (Integer/parseInt (re-find #"\A-?\d+" s)))
+
 (def header
   [:head
     [:script {:src "/js/goog/base.js" :type "text/javascript"}]
@@ -46,6 +49,11 @@
       (str (get entry :name)))
   ])
 
+(defn list-path-entry [entry]
+  [:li
+    (map #(link-to (str "/details/" (get % :id)) " "(get % :name)) entry)
+    ])
+
 (defn list-connection-entry-detailed [entry entryid]
   [:li
     (link-to (str "/details/"
@@ -89,6 +97,11 @@
     (map #(list-connection-entry-editable % id) coll)
   ])
 
+(defn list-paths [coll]
+  [:ul
+    (map #(list-path-entry %) coll)
+  ])
+
 (defn details-edit-fields [id]
   (str (get (neo4j/get-node-by-id (Integer/parseInt id)) :data)))
 
@@ -112,6 +125,12 @@
     [:h2 "Edit details for: " (neo4j/read-name-by-id (Integer/parseInt id))]
     (str params)
     ))
+
+(defn paths-view [id1 id2]
+  (layout
+    [:h2 "Paths between " (neo4j/read-name-by-id (parse-int id1)) " and " (neo4j/read-name-by-id (parse-int id2))]
+    (list-paths
+      (neo4j/get-paths-between-nodes (parse-int id1) (parse-int id2) 4))))
 
 (defn search-page [params]
   (layout

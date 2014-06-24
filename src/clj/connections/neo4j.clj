@@ -88,7 +88,7 @@
       (map #(get-connection-details %) (get-connections-out-by-name name)))))
 
 (defn get-path-details [path]
-  (into #{} (map #(hash-map
+  (into [] (map #(hash-map
     :id (read-id-from-url %)
     :name (read-name-by-id (read-id-from-url %)))
     (get path :nodes))))
@@ -96,5 +96,5 @@
 (defn get-paths-between-nodes [id1 id2 depth]
   (map
     #(get-path-details %)
-    (paths/all-shortest-between conn id1 id2 :max-depth depth)))
+    (paths/all-shortest-between conn (get (get-node-by-id id1) :id) (get (get-node-by-id id2) :id) :max-depth depth)))
 
