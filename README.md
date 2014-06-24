@@ -5,7 +5,7 @@ Project officially started after I proposed it to [Datademo](http://datademo.fi)
 
 I try to make this as usable as possible for the public so everybody could
 use it to check how the politicians are connected. The source data comes
-from Parliament of Finland.
+from Parliament of Finland (stored separately).
 
 Datademo program ends in few months but I plan to continue developing this after that.
 
