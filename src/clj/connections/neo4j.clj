@@ -53,6 +53,9 @@
 (defn read-name-by-id [id]
   (get-in (get-node-by-id id) [:data :name]))
 
+(defn get-node-data [id]
+  (get-in (get-node-by-id id) [:data]))
+
 (defn get-node-connections-out [id]
   (nrl/outgoing-for conn (get-node-by-id id)))
 
@@ -65,7 +68,7 @@
 (defn get-connections-in-by-name [name]
   (get-node-connections-in (read-id-from-cypher-entry (first (get-entry-by-name name)))))
 
-(defn get-connection-details [connection]
+(defn get-connection-details [connection direction]
   (let [sid (read-id-from-url (get connection :start))
         eid (read-id-from-url (get connection :end))]
     (hash-map
@@ -77,15 +80,23 @@
       :type (get connection :type)
       :role (get-in connection [:data :role])
       :startdate (get-in connection [:data :startdate])
-      :enddate (get-in connection [:data :enddate]))))
+      :enddate (get-in connection [:data :enddate])
+      :direction direction)))
 
 ;get all connections for an entry
 (defn get-connections-by-name [name]
   (filter #(not (empty? %))
     (conj
       '()
-      (map #(get-connection-details %) (get-connections-in-by-name name))
-      (map #(get-connection-details %) (get-connections-out-by-name name)))))
+      (map #(get-connection-details % "in") (get-connections-in-by-name name))
+      (map #(get-connection-details % "out") (get-connections-out-by-name name)))))
+
+(defn get-connections-by-id [id]
+  (filter #(not (empty? %))
+    (conj
+      []
+      (map #(get-connection-details % "in") (get-node-connections-in id))
+      (map #(get-connection-details % "out") (get-node-connections-out id)))))
 
 (defn get-path-details [path]
   (into [] (map #(hash-map
