@@ -2,8 +2,13 @@
   (:require
     [connections.neo4j :as neo4j]))
 
-;=== read data from database ===
-(defn load-persons-vector []
+;=== define atoms ===
+(def persons (atom []))
+(def organizations (atom []))
+(def connections (atom []))
+
+;=== load data from database ===
+(defn- load-persons-vector []
   "Read all persons from database to new vector"
   (into []
     (map
@@ -12,7 +17,7 @@
         (neo4j/get-node-data (% :id)))
       (neo4j/search-all-persons))))
 
-(defn load-organizations-vector []
+(defn- load-organizations-vector []
   "Read all organizations from database to new vector"
   (into []
     (map
@@ -21,10 +26,7 @@
         (neo4j/get-node-data (% :id)))
       (neo4j/search-all-organizations))))
 
-(def persons (atom (load-persons-vector)))
-;(def organizations (atom (load-organizations-vector)))
-
-(defn load-connections-vector []
+(defn- load-connections-vector []
   "Read all connections from persons.
   Assumes that every connection has assigned person.
   Iterating thru organizations would take much longer."
@@ -35,13 +37,24 @@
         :connections (neo4j/get-connections-by-id (% :id)))
       @persons)))
 
-;(def connections (atom (load-connections-vector)))
+(defn load-persons! []
+  (reset! persons (load-persons-vector)))
 
+(defn load-organizations! []
+  (reset! organizations (load-organizations-vector)))
+
+(defn load-connections! []
+  (reset! connections (load-connections-vector)))
+
+;=== read data from atoms ===
 (defn get-person-by-id [id]
   (filter #(= id (get % :id)) @persons))
 
-;(defn get-organization-by-id [id]
-;  (filter #(= id (get % :id)) @organizations))
+(defn get-organization-by-id [id]
+  (filter #(= id (get % :id)) @organizations))
+
+(defn get-connections-by-person-id [id]
+  (filter #(= id (get % :id)) @connections))
 
 ;===============================================================
 (def person
