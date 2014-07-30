@@ -31,9 +31,12 @@
 
 (defn find-search-matches [app search-term owner]
   (filter
-    #(not (nil?
-      (re-matches (re-pattern search-term) (:name %))))
+    #(re-matches (re-pattern search-term) (:name %))
     (:persons app)))
+;Alternative solution:
+;  (->> app :persons
+;    (filter
+;      (comp (partial re-find (re-pattern search-term)) :name))))
 
 (defn commit-search [app owner]
   (let [search-term-el (om/get-node owner "search-term")
