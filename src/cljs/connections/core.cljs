@@ -30,9 +30,9 @@
   }))
 
 (defn find-search-matches [app search-term owner]
-  (filter
+  (vec (filter
     #(re-matches (re-pattern search-term) (:name %))
-    (:persons app)))
+    (:persons app))))
 ;Alternative solution:
 ;  (->> app :persons
 ;    (filter
@@ -43,9 +43,9 @@
         search-term    (.-value search-term-el)]
     (om/transact! app [:search :text] (fn [_] search-term))
     (set! (.-value search-term-el) "")
-    (js/console.log (str "search:" (:search @app)))
-    (js/console.log (str "results:"
-      (find-search-matches @app search-term owner)))))
+    (om/transact! app [:search :results]
+      (fn [_] (find-search-matches @app search-term owner)))
+    (js/console.log (str "search:" (:search @app)))))
 
 (defn search-view [app owner]
   (reify
@@ -81,11 +81,12 @@
     (render [_]
       (dom/div nil
         (dom/h2 nil "Persons")
-          (om/build persons-list (:persons app))))))
+          (om/build persons-list (:persons app))
+        (dom/h2 nil "Search results")
+          (om/build persons-list (:results (:search app)))))))
 
 (om/root search-view app-state
   {:target (. js/document (getElementById "header-search"))})
 
 (om/root app-view app-state
   {:target (. js/document (getElementById "app"))})
-
