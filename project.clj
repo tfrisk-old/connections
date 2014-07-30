@@ -6,7 +6,7 @@
                  [org.clojure/clojurescript "0.0-2227"]
 		 [clojurewerkz/neocons "3.0.0"]
 		 [compojure "1.1.8"]
-		 [hiccup "1.0.5"]]
+		 [om "0.6.5"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
 	    [lein-ring "0.8.7"]]
