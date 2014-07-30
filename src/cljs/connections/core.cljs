@@ -29,12 +29,20 @@
   ]
   }))
 
+(defn find-search-matches [app search-term owner]
+  (filter
+    #(not (nil?
+      (re-matches (re-pattern search-term) (:name %))))
+    (:persons app)))
+
 (defn commit-search [app owner]
   (let [search-term-el (om/get-node owner "search-term")
         search-term    (.-value search-term-el)]
     (om/transact! app [:search :text] (fn [_] search-term))
     (set! (.-value search-term-el) "")
-    (js/console.log (str "search:" (:search @app)))))
+    (js/console.log (str "search:" (:search @app)))
+    (js/console.log (str "results:"
+      (find-search-matches @app search-term owner)))))
 
 (defn search-view [app owner]
   (reify
@@ -49,12 +57,20 @@
           #js {:onClick #(commit-search app owner)}
           "Search")))))
 
-(defn list-entry-view [person owner]
+(defn person-item [cursor owner]
   (reify
     om/IRender
     (render [_]
       (dom/li nil
-        (dom/div nil (str (:name person)))))))
+        (dom/div nil (str (:name cursor)))))))
+
+(defn persons-list [cursor owner]
+  (reify
+    om/IRender
+    (render [_]
+      (dom/div nil
+        (apply dom/ul nil
+          (om/build-all person-item cursor))))))
 
 (defn app-view [app owner]
   (reify
@@ -62,8 +78,7 @@
     (render [_]
       (dom/div nil
         (dom/h2 nil "Persons")
-        (apply dom/ul nil
-          (om/build-all list-entry-view (:persons app)))))))
+          (om/build persons-list (:persons app))))))
 
 (om/root search-view app-state
   {:target (. js/document (getElementById "header-search"))})
