@@ -29,6 +29,11 @@
   ]
   }))
 
+(defn display [show]
+  (if show
+    #js {}
+    #js {:display "none"}))
+
 (defn find-search-matches [app search-term owner]
   (vec (filter
     #(re-matches (re-pattern search-term) (:name %))
@@ -60,12 +65,43 @@
           #js {:onClick #(commit-search app owner)}
           "Search")))))
 
-(defn person-item [cursor owner]
+(defn person-details [person]
   (reify
     om/IRender
     (render [_]
+      (dom/ul nil
+        (dom/li nil "Id: " (:id person))
+        (dom/li nil "Name: " (:name person))
+        (dom/li nil "Other names: " (str (:other_names person)))
+        (dom/li nil "Identifiers: " (str (:identifiers person)))
+        (dom/li nil "Email: " (:email person))
+        (dom/li nil "Gender: " (:gender person))
+        (dom/li nil "Birth date: " (:birth_date person))
+        (dom/li nil "Death date: " (:death_date person))
+        (dom/li nil "Image: " (:image person))
+        (dom/li nil "Summary: " (:summary person))
+        (dom/li nil "Biography: " (:biography person))
+        (dom/li nil "National identity: " (:national_identity person))
+        (dom/li nil "Contact details: " (str (:contact_details person)))
+        (dom/li nil "Links: " (str (:links person)))
+      ))))
+
+(defn person-item [person owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:details-visible false})
+    om/IRenderState
+    (render-state [_ {:keys [details-visible]}]
       (dom/li nil
-        (dom/div nil (str (:name cursor)))))))
+        (dom/div nil
+          (dom/a
+            #js {:href "#" ;toggle details visibility
+                 :onClick #(om/set-state! owner
+                            :details-visible (not details-visible))}
+            (str (:name person)))
+          (dom/div #js {:style (display details-visible)}
+            (om/build person-details person)))))))
 
 (defn persons-list [cursor owner]
   (reify
