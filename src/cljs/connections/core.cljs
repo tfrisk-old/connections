@@ -65,23 +65,75 @@
           #js {:onClick #(commit-search app owner)}
           "Search")))))
 
+(defn handle-change [e data edit-key owner]
+  (om/transact! data edit-key (fn [_] (.. e -target -value))))
+
+(defn end-edit [data edit-key text owner cb]
+  (om/set-state! owner :editing false)
+  (om/transact! data edit-key (fn [_] text))
+  (when cb
+    (cb text)))
+
+;update backend
+(defn on-edit [edit-key data]
+  (js/console.log (str "edit-key " edit-key ", data " @data)))
+
+(defn editable [data owner {:keys [edit-key on-edit label] :as opts}]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:editing false})
+    om/IRenderState
+    (render-state [_ {:keys [editing]}]
+      (let [text (get data edit-key)]
+        (dom/li nil (if label (str label))
+          (dom/span #js {:style (display (not editing))} text)
+          (dom/input
+            #js {:style (display editing)
+                 :value text
+                 :onChange #(handle-change % data edit-key owner)
+                 :onKeyPress #(when (== (.-keyCode %) 13)
+                                (end-edit data edit-key text owner on-edit))
+                 :onBlur (fn [e]
+                           (when (om/get-state owner :editing)
+                             (end-edit data edit-key text owner on-edit)))})
+          (dom/button
+            #js {:onClick #(om/set-state! owner :editing (not editing))}
+            (if editing "Done" "Edit")))))))
+
 (defn person-details [person]
   (reify
     om/IRender
     (render [_]
       (dom/ul nil
         (dom/li nil "Id: " (:id person))
-        (dom/li nil "Name: " (:name person))
+        (om/build editable person {:opts
+          {:edit-key :name :on-edit #(on-edit :name person)
+           :label "Name: "}})
         (dom/li nil "Other names: " (str (:other_names person)))
         (dom/li nil "Identifiers: " (str (:identifiers person)))
-        (dom/li nil "Email: " (:email person))
-        (dom/li nil "Gender: " (:gender person))
-        (dom/li nil "Birth date: " (:birth_date person))
-        (dom/li nil "Death date: " (:death_date person))
+        (om/build editable person {:opts
+          {:edit-key :email :on-edit #(on-edit :email person)
+           :label "Email: "}})
+        (om/build editable person {:opts
+          {:edit-key :gender :on-edit #(on-edit :gender person)
+           :label "Gender: "}})
+        (om/build editable person {:opts
+          {:edit-key :birth_date :on-edit #(on-edit :birth_date person)
+           :label "Birth date: "}})
+        (om/build editable person {:opts
+          {:edit-key :death_date :on-edit #(on-edit :death_date person)
+           :label "Death date: "}})
         (dom/li nil "Image: " (:image person))
-        (dom/li nil "Summary: " (:summary person))
-        (dom/li nil "Biography: " (:biography person))
-        (dom/li nil "National identity: " (:national_identity person))
+        (om/build editable person {:opts
+          {:edit-key :summary :on-edit #(on-edit :summary person)
+           :label "Summary: "}})
+        (om/build editable person {:opts
+          {:edit-key :biography :on-edit #(on-edit :biography person)
+           :label "Biography: "}})
+        (om/build editable person {:opts
+          {:edit-key :national_identity :on-edit #(on-edit :national_identity person)
+           :label "National identity: "}})
         (dom/li nil "Contact details: " (str (:contact_details person)))
         (dom/li nil "Links: " (str (:links person)))
       ))))
