@@ -29,10 +29,18 @@
   ]
   }))
 
+;;====== generic helpers
+
 (defn display [show]
   (if show
     #js {}
     #js {:display "none"}))
+
+;TODO: update backend
+(defn on-edit [edit-key data]
+  (js/console.log (str "edit-key " edit-key ", data " @data)))
+
+;;====== search box
 
 (defn find-search-matches [app search-term owner]
   (vec (filter
@@ -65,6 +73,8 @@
           #js {:onClick #(commit-search app owner)}
           "Search")))))
 
+;;====== editable form
+
 (defn handle-change [e data edit-key owner]
   (om/transact! data edit-key (fn [_] (.. e -target -value))))
 
@@ -73,10 +83,6 @@
   (om/transact! data edit-key (fn [_] text))
   (when cb
     (cb text)))
-
-;update backend
-(defn on-edit [edit-key data]
-  (js/console.log (str "edit-key " edit-key ", data " @data)))
 
 (defn editable [data owner {:keys [edit-key on-edit label] :as opts}]
   (reify
@@ -100,6 +106,8 @@
           (dom/button
             #js {:onClick #(om/set-state! owner :editing (not editing))}
             (if editing "Done" "Edit")))))))
+
+;;====== person details view
 
 (defn person-details [person]
   (reify
@@ -173,8 +181,41 @@
         (dom/h2 nil "Search results")
           (om/build persons-list (:results (:search app)))))))
 
+;;====== graph view
+
+(defn render-test [app]
+  (-> js/d3
+      (.select "#graph-view")
+      (.append "div")
+      (.style "background-color" "black")))
+
+(defn graph-view [app owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]) ;TODO: listen for change events
+    om/IRender
+    (render [_]
+      (dom/div nil
+        (dom/h2 nil "Graph")
+        (dom/div #js {:id "graph-view"})))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [n (.getElementById js/document "render-test")]
+        (render-test app)))))
+
+;;====== root elements
+
 (om/root search-view app-state
   {:target (. js/document (getElementById "header-search"))})
 
 (om/root app-view app-state
   {:target (. js/document (getElementById "app"))})
+
+(om/root graph-view app-state
+  {:target (. js/document (getElementById "graph"))})
+
+;js library calling from cljs example:
+;
+;jQuery.select("#main")    (-> js/jQuery (.select "#main")
+;  .append("<span>")         (.append "<span>")
+;  .text("hello");           (.text "hello"))
